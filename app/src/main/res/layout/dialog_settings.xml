@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
 
   <EditText
       android:layout_width="match_parent"
@@ -16,36 +17,44 @@
       android:hint="TABLE"
       />
 
-
   <LinearLayout
+      android:id="@+id/linearParent"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:weightSum="1"
-      android:id="@+id/linearColumn"
+      android:orientation="vertical"
       >
 
-    <EditText
+    <LinearLayout
+        android:id="@+id/linearColumn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="NAME"
-        android:layout_weight="0.5"
-        />
+        android:orientation="horizontal"
+        android:weightSum="1"
+        >
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="TYPE"
-        android:layout_weight="0.5"
-        />
+      <EditText
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="0.5"
+          android:hint="NAME"
+          />
+
+      <EditText
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_weight="0.5"
+          android:hint="TYPE"
+          />
+    </LinearLayout>
+
   </LinearLayout>
 
   <Button
+      android:id="@+id/btnCreateDatabaseDialog"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:id="@+id/btnCreateDatabaseDialog"
-      android:text="Add Column"
       android:onClick="addEditText"
+      android:text="Add Column"
       />
 
 </LinearLayout>

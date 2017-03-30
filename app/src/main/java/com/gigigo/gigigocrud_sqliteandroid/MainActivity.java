@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     LayoutInflater inflater = getLayoutInflater();
     View view = inflater.inflate(R.layout.dialog_settings, null);
 
+    linearLayout = (LinearLayout)view.findViewById(R.id.linearParent);
+
     //endregion
 
     final Dialog dialog = onCreateDialog(view);
@@ -152,11 +154,11 @@ public class MainActivity extends AppCompatActivity {
 
     EditText etType = new EditText(this);
     etType.setLayoutParams(params);
-    etName.setHint("TYPE");
+    etType.setHint("TYPE");
 
     linearAux.addView(etName);
     linearAux.addView(etType);
-    linearLayout.addView(linearAux);
+    linearLayout.addView(linearAux, params);
 
   }
 
@@ -200,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void settingButtons() {
 
-    linearLayout = (LinearLayout)findViewById(R.id.linearColumn);
+
     btnCreateDatabase = (Button) findViewById(R.id.btnCreateDatabase);
     btnExistsDatabase = (Button) findViewById(R.id.btnExistsDatabase);
     btnDropDatabase = (Button) findViewById(R.id.btnDropDatabase);

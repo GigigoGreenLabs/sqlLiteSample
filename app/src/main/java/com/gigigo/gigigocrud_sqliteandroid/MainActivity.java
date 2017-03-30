@@ -14,10 +14,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-
-
+import static android.R.attr.entries;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
   private ArrayList<String> tableList;
   private boolean tableExists;
   private LinearLayout linearLayout;
+  private int id;
+  private String editTextName = "etName";
+  private String editTextType = "etType";
+  private HashMap<Integer, EditText> hmEditText;
 
   private Button btnCreateDatabase;
   private Button btnExistsDatabase;
@@ -44,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    settingButtons();
+    settings();
     LayoutInflater inflater = getLayoutInflater();
     View view = inflater.inflate(R.layout.dialog_settings, null);
 
@@ -147,18 +152,44 @@ public class MainActivity extends AppCompatActivity {
     params.weight = 1.0f;
 
 
+    editTextName = editTextName+ id;
     EditText etName = new EditText(this);
     etName.setLayoutParams(params);
+    etName.setId(id);
     etName.setHint("NAME");
+
+    hmEditText.put(id,etName);
+
+    id++;
 
 
     EditText etType = new EditText(this);
     etType.setLayoutParams(params);
+    etType.setId(id);
     etType.setHint("TYPE");
+
+
+
+    hmEditText.put(id,etType);
+
+
+    id++;
+    Log.v("---------------",""+etName.getId()+ etType.getId());
 
     linearAux.addView(etName);
     linearAux.addView(etType);
     linearLayout.addView(linearAux, params);
+
+
+    Iterator iterator = hmEditText.entrySet().iterator();
+
+
+    while (iterator.hasNext()){
+      Map.Entry thisEntry = (Map.Entry) iterator.next();
+      int key = (int) thisEntry.getKey();
+      EditText value = (EditText) thisEntry.getValue();
+      Log.v("HASHMAP","--------"+ key+" "+ value);
+    }
 
   }
 
@@ -200,8 +231,10 @@ public class MainActivity extends AppCompatActivity {
     return builder.create();
   }
 
-  private void settingButtons() {
+  private void settings() {
 
+    id = 0;
+    hmEditText = new HashMap<>();
 
     btnCreateDatabase = (Button) findViewById(R.id.btnCreateDatabase);
     btnExistsDatabase = (Button) findViewById(R.id.btnExistsDatabase);

@@ -21,6 +21,14 @@
         >
 
       <Button
+          android:id="@+id/btnSetDatabase"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="Set DB"
+          />
+
+
+      <Button
           android:id="@+id/btnCreateDatabase"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"

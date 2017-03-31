@@ -4,10 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import android.util.Log;
+
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pablo.rojas on 29/3/17.
@@ -25,7 +24,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
   public SQLiteManager(Context context, String name) {
     super(context, name, factory, version);
-    databaseName = name;
+    this.databaseName = name;
   }
 
   @Override public void onCreate(SQLiteDatabase db) {
@@ -121,15 +120,16 @@ public class SQLiteManager extends SQLiteOpenHelper {
     Cursor cursor = db.rawQuery(tableListStr, null);
     cursor.moveToFirst(); // android_metadata
     cursor.moveToNext();  // sqlite_sequence
-      while (cursor.moveToNext()){
-        String tableName = cursor.getString(0);
-        tableNameList.add(tableName);
-      }
-      return tableNameList;
+    while (cursor.moveToNext()){
+      String tableName = cursor.getString(0);
+      tableNameList.add(tableName);
+    }
+    return tableNameList;
   }
 
   public boolean checkIfTableExist(SQLiteDatabase db, String tablename) {
-   boolean tableExists = false;
+    Log.v("TABLEEXIST",""+ tablename);
+    boolean tableExists = false;
     String tableListStr = "SELECT name FROM sqlite_master WHERE type='table' AND name='"+tablename+"';";
     Cursor cursor = db.rawQuery(tableListStr, null);
     if (cursor.moveToFirst()){
@@ -211,6 +211,4 @@ public class SQLiteManager extends SQLiteOpenHelper {
     context.deleteDatabase(dbusers);
   }
 
-  //public List<ModelUser> selectByName();//nombre exacto
-  //public List<ModelUser> selectLikeName();///con like operator
 }

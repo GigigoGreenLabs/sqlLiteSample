@@ -16,6 +16,15 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+    <activity android:name=".TableListActivity">
+    </activity>
+    <activity android:name=".ColumnListActivity">
+    </activity>
+    <activity
+        android:name=".DataBaseListActivity"
+        android:label="@string/title_activity_data_base_list_adapter"
+        android:theme="@style/AppTheme.NoActionBar">
+    </activity>
   </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.gigigo.gigigocrud_sqliteandroid;
+package com.gigigo.gigigocrud_sqliteandroid.Objects;
 
 /**
  * Created by pablo.rojas on 29/3/17.
@@ -6,10 +6,10 @@ package com.gigigo.gigigocrud_sqliteandroid;
 
 public class ModelUser {
 
-  String nombre;
-  String datetime;
-  int edad;
-  int id;
+  public String nombre;
+  public String datetime;
+  public int edad;
+  public int id;
 
   public ModelUser() {
   }

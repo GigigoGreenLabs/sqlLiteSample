@@ -2,6 +2,7 @@ package com.gigigo.gigigocrud_sqliteandroid;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -16,6 +17,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import android.widget.Toast;
+import com.gigigo.gigigocrud_sqliteandroid.Objects.EditTextRow;
+import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
   //region
   private ArrayList<ModelUser> userList;
   private ArrayList<String> tableList;
-  private ArrayList<String> columnNames;
+  private HashMap<String, String> columnNames;
   private boolean tableExists;
   private LinearLayout linearLayout;
   private int editTextId;
@@ -39,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
   private View viewDropItem;
   private View viewClearTable;
 
+  private Button btnOpenDatabase;
   private Button btnSetDatabase;
   private Button btnCreateDatabase;
   private Button btnExistsDatabase;
@@ -92,6 +96,15 @@ public class MainActivity extends AppCompatActivity {
     final Dialog dialogSearchItem = onCreateDialog(viewSearchItem);
     final Dialog dialogDropItem = onCreateDialog(viewDropItem);
     final Dialog dialogClearTable = onCreateDialog(viewClearTable);
+
+
+    btnOpenDatabase.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View v) {
+        Intent intent = new Intent(MainActivity.this, DataBaseListActivity.class);
+        startActivity(intent);
+      }
+    });
+
 
     btnSetDatabase.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -213,8 +226,10 @@ public class MainActivity extends AppCompatActivity {
     userList = dbmanager.load(db, dbmanager.getTableName());
     printListUsers(userList);
 
+
+    Log.v("","TABLELIST");
     tableList = dbmanager.getTableList(db);
-    printListTables(tableList);
+    //printListTables(tableList);
 
     tableExists = dbmanager.checkIfTableExist(db, "USERS");
     Log.v("TABLEEXISTS", "" + tableExists);
@@ -317,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
               String database = editTextSetDatabase.getText().toString().trim();
               dbmanager = new SQLiteManager(getApplicationContext(), database);
               db = dbmanager.getWritableDatabase();
+
             } else if (view.equals(viewSearchItem)) {
               if (searchItemIsDataBase) {
                 String searchItem = editTextSearchItem.getText().toString().trim();
@@ -431,11 +447,14 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void printListTables(ArrayList<String> tableList) {
-    Iterator it = tableList.iterator();
+  private void printListTables(HashMap<String, String> tableList) {
+    Iterator it = tableList.entrySet().iterator();
+
     while (it.hasNext()) {
-      String tableName = (String) it.next();
-      Log.v("TABLENAME", " " + tableName);
+      Map.Entry entry = (Map.Entry) it.next();
+      String name = (String) entry.getKey();
+      String type = (String) entry.getValue();
+      Log.v("TABLENAME", " " + name+ " " + type);
     }
   }
 
@@ -455,8 +474,9 @@ public class MainActivity extends AppCompatActivity {
     searchItemIsDataBase = true;
     dropItemIsDataBase = true;
     hashMapEditText = new HashMap<>();
-    columnNames = new ArrayList<String>();
+    columnNames = new HashMap<>();
     linearLayout = (LinearLayout) viewCreateDB.findViewById(R.id.linearParent);
+    btnOpenDatabase = (Button) findViewById(R.id.btnOpenDatabase);
     btnSetDatabase = (Button) findViewById(R.id.btnSetDatabase);
     btnCreateDatabase = (Button) findViewById(R.id.btnCreateDatabase);
     btnExistsDatabase = (Button) findViewById(R.id.btnExistsDatabase);
@@ -472,6 +492,7 @@ public class MainActivity extends AppCompatActivity {
     btnFindItemByName = (Button) findViewById(R.id.btnFindItemByName);
     btnFindItemLikeName = (Button) findViewById(R.id.btnFindItemLikeName);
     dbmanagerAux = new SQLiteManager(getApplicationContext(), null);
+
   }
 
   private void settingsFromDialogViewSetDatabase(View view) {

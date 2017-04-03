@@ -1,4 +1,4 @@
-package com.gigigo.gigigocrud_sqliteandroid;
+package com.gigigo.gigigocrud_sqliteandroid.Objects;
 
 import android.widget.EditText;
 

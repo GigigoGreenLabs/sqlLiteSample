@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by pablo.rojas on 29/3/17.
@@ -143,14 +145,17 @@ public class SQLiteManager extends SQLiteOpenHelper {
     return tableExists;
   }
 
-  public ArrayList<String> getTableColumnNames(SQLiteDatabase db, String tablename) {
-    ArrayList<String> columnNamesList = new ArrayList<>();
+  public HashMap<String, String> getTableColumnNames(SQLiteDatabase db, String tablename) {
+
+    HashMap<String, String>  columnNamesList = new HashMap<String, String>();
     String tableListStr = "PRAGMA table_info('" + tablename + "');";
     Cursor cursor = db.rawQuery(tableListStr, null);
     if (cursor.moveToFirst()) {
-      columnNamesList.add(cursor.getString(1));
+      columnNamesList.put(cursor.getString(1), cursor.getString(2));
+      //Log.v("Columns",""+ cursor.getString(0)+cursor.getString(1)+ cursor.getString(2));
       while (cursor.moveToNext()) {
-        columnNamesList.add(cursor.getString(1));
+        columnNamesList.put(cursor.getString(1), cursor.getString(2));
+        Log.v("Columns",""+ cursor.getString(0)+cursor.getString(1)+ cursor.getString(2));
       }
     }
     return columnNamesList;
@@ -248,5 +253,22 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
   public void setCreateTableWithColumns(boolean createTableWithColumns) {
     this.createTableWithColumns = createTableWithColumns;
+  }
+
+  public ArrayList<String> getDatabaseNameList(SQLiteDatabase dbAux) {
+    ArrayList<String> dbList = new ArrayList<>();
+
+    String count = ".databases";
+    Cursor mcursor = dbAux.rawQuery(count, null);
+   if (mcursor.moveToFirst()){
+      Log.v("DATABASE",""+mcursor.getString(0));
+     dbList.add(mcursor.getString(0));
+     while (mcursor.moveToNext()){
+       Log.v("DATABASE",""+mcursor.getString(0));
+       dbList.add(mcursor.getString(0));
+     }
+   }
+
+    return dbList;
   }
 }

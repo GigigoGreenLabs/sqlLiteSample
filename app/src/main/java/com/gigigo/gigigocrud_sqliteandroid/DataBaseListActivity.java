@@ -21,8 +21,8 @@ public class DataBaseListActivity extends AppCompatActivity {
   ArrayList<String> databaseList;
   SQLiteManager dbmanager;
   SQLiteDatabase db;
-  View databaseView;
-  EditText editTextDatabaseDialog;
+  View dialogView;
+  EditText editTextFromDialog;
   ListView listview;
   ArrayAdapter adapter;
   Dialog databaseDialog;
@@ -33,9 +33,8 @@ public class DataBaseListActivity extends AppCompatActivity {
     setContentView(R.layout.activity_database_list);
 
     LayoutInflater inflater = getLayoutInflater();
-    databaseView = inflater.inflate(R.layout.dialog_database, null);
-    databaseDialog = createDialog(databaseView);
-
+    dialogView = inflater.inflate(R.layout.dialog_edittext, null);
+    databaseDialog = createDialog(dialogView);
 
 
 
@@ -46,7 +45,7 @@ public class DataBaseListActivity extends AppCompatActivity {
     adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseList );
     listview.setAdapter(adapter);
 
-    editTextDatabaseDialog = (EditText) databaseView.findViewById(R.id.editTextDatabaseDialog);
+    editTextFromDialog = (EditText) dialogView.findViewById(R.id.editTextDialog);
 
     listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
@@ -58,13 +57,14 @@ public class DataBaseListActivity extends AppCompatActivity {
         ArrayList<String> tableList = new ArrayList<String>();
         Intent intent = new Intent(DataBaseListActivity.this, TableListActivity.class);
         tableList = dbmanager.getTableList(db);
+        intent.putExtra("databaseName", item);
+        intent.putStringArrayListExtra("tableList", tableList);
         if (tableList.size() > 0) {
-          intent.putExtra("databaseName", item);
-          intent.putStringArrayListExtra("tableList", tableList);
           startActivity(intent);
         } else {
           Toast.makeText(DataBaseListActivity.this, "BASE DE DATOS SIN CONTENIDO",
               Toast.LENGTH_SHORT).show();
+          startActivity(intent);
         }
       }
     });
@@ -77,7 +77,7 @@ public class DataBaseListActivity extends AppCompatActivity {
         // Add action buttons
         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            String datatext = editTextDatabaseDialog.getText().toString().trim();
+            String datatext = editTextFromDialog.getText().toString().trim();
             if (!dropDatabase){
               Log.v("CREATEBUTTON",""+datatext);
               dbmanager = new SQLiteManager(getApplicationContext(),datatext);

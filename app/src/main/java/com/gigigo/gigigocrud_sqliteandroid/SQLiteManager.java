@@ -6,10 +6,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import android.widget.EditText;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by pablo.rojas on 29/3/17.
@@ -145,9 +148,9 @@ public class SQLiteManager extends SQLiteOpenHelper {
     return tableExists;
   }
 
-  public HashMap<String, String> getTableColumnNames(SQLiteDatabase db, String tablename) {
+  public LinkedHashMap<String, String> getTableColumnNames(SQLiteDatabase db, String tablename) {
 
-    HashMap<String, String>  columnNamesList = new HashMap<String, String>();
+    LinkedHashMap<String, String>  columnNamesList = new LinkedHashMap<String, String>();
     String tableListStr = "PRAGMA table_info('" + tablename + "');";
     Cursor cursor = db.rawQuery(tableListStr, null);
     if (cursor.moveToFirst()) {
@@ -270,5 +273,53 @@ public class SQLiteManager extends SQLiteOpenHelper {
    }
 
     return dbList;
+  }
+
+  public int getTableColumnCount(SQLiteDatabase db, String tableName) {
+    int columns = 0;
+    String tableListStr = "PRAGMA table_info('" + tableName + "');";
+    Cursor cursor = db.rawQuery(tableListStr, null);
+    if (cursor.moveToFirst()) {
+      columns++;
+      while (cursor.moveToNext()) {
+        columns++;
+      }
+    }
+    return columns;
+
+  }
+
+  public void insertColumnType(SQLiteDatabase db, String tableName, String columnName, String columnType) {
+    String query = "ALTER TABLE '"+ tableName+"' ADD COLUMN '"+columnName+"' '"+columnType+"'";
+    db.execSQL(query);
+  }
+
+  public void insertRowHm(SQLiteDatabase db, LinkedHashMap<EditText, String> hmEditTextColumn,
+      String tableName) {
+
+    String query = "INSERT INTO '"+tableName+"' VALUES (";
+
+    EditText editTextAux;
+    Iterator iterator = hmEditTextColumn.entrySet().iterator();
+
+    while (iterator.hasNext()){
+      Map.Entry entry = (Map.Entry) iterator.next();
+      String type = (String) entry.getValue();
+      editTextAux = (EditText) entry.getKey();
+      if (type.equals("INTEGER")){
+        query = query +editTextAux.getText().toString().trim()+ ",";
+      }else if (type.equals("TEXT")){
+        query = query +"'"+editTextAux.getText().toString().trim()+"',";
+      }else if (type.equals("DATETIME")){
+        query = query +"CURRENT_TIMESTAMP ,";
+      }
+    }
+    query = query.substring(0,query.length()-1)+ ");";
+
+
+    db.execSQL(query);
+
+
+
   }
 }

@@ -1,34 +1,48 @@
 package com.gigigo.gigigocrud_sqliteandroid;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import com.gigigo.gigigocrud_sqliteandroid.Adapters.ColumnAdapter;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ItemColumnAdapter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ColumnListActivity extends AppCompatActivity {
 
-
   SQLiteManager dbmanager;
   SQLiteDatabase db;
   String databaseName;
   String tableName;
-  HashMap<String, String> hmColumnType;
-
+  LinkedHashMap<String, String> hmColumnType;
+  View dialogView;
+  Dialog columnDialog;
+  EditText editTextNameFromDialog;
+  EditText editTextTypeFromDialog;
+  ColumnAdapter adapter;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_column_list);
 
+    LayoutInflater inflater = getLayoutInflater();
+    dialogView = inflater.inflate(R.layout.dialog_double_edittext, null);
+    columnDialog = createDialog(dialogView);
 
-
+    editTextNameFromDialog = (EditText) dialogView.findViewById(R.id.editTextNameFromDialog);
+    editTextTypeFromDialog = (EditText) dialogView.findViewById(R.id.editTextTypeFromDialog);
 
     final ListView listview = (ListView) findViewById(R.id.listColumns);
 
@@ -38,30 +52,62 @@ public class ColumnListActivity extends AppCompatActivity {
       tableName = extras.getString("tableName");
     }
 
-    dbmanager = new SQLiteManager(getApplicationContext(),databaseName);
+    dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
     db = dbmanager.getWritableDatabase();
 
-    hmColumnType = dbmanager.getTableColumnNames(db,tableName);
+    hmColumnType = dbmanager.getTableColumnNames(db, tableName);
 
     Iterator it = hmColumnType.entrySet().iterator();
 
     List<ItemColumnAdapter> listaItems = new ArrayList<>();
 
-
-    while (it.hasNext()){
+    while (it.hasNext()) {
       Map.Entry row = (Map.Entry) it.next();
       String name = (String) row.getKey();
       String type = (String) row.getValue();
-      ItemColumnAdapter item = new ItemColumnAdapter(name,type);
+      ItemColumnAdapter item = new ItemColumnAdapter(name, type);
       listaItems.add(item);
-      Log.v("hashmap",""+name + " "+ type);
+      Log.v("hashmap", "" + name + " " + type);
     }
 
-
-    ColumnAdapter itemColumns = new ColumnAdapter(this, R.layout.custom_column_item, listaItems);
-    listview.setAdapter(itemColumns);
-
-
+    adapter = new ColumnAdapter(this, R.layout.custom_column_item, listaItems);
+    listview.setAdapter(adapter);
   }
 
+
+
+  private Dialog createDialog(View databaseView) {
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setView(databaseView)
+        // Add action buttons
+        .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
+            String name = editTextNameFromDialog.getText().toString().trim();
+            String type = editTextTypeFromDialog.getText().toString().trim();
+            Log.v("CREATEBUTTON", "" + tableName);
+            dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
+            db = dbmanager.getWritableDatabase();
+            dbmanager.insertColumnType(db, tableName, name, type);
+            hmColumnType.put(name, type);
+            adapter.notifyDataSetChanged();
+          }
+        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int id) {
+
+      }
+    });
+    return builder.create();
+  }
+
+  public void insertColumnType(View view) {
+    columnDialog.show();
+  }
+
+  public void openDataActivity(View view) {
+    Intent intent = new Intent(ColumnListActivity.this, DataContentGridActivity.class);
+    intent.putExtra("databaseName", databaseName);
+    intent.putExtra("tableName", tableName);
+    startActivity(intent);
+  }
 }

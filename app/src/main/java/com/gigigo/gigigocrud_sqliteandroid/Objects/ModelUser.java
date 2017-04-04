@@ -30,6 +30,7 @@ public class ModelUser {
   }
 
   public String getNombre() {
+
     return nombre;
   }
 

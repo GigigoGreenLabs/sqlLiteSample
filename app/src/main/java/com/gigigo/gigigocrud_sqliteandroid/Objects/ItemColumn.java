@@ -4,7 +4,7 @@ package com.gigigo.gigigocrud_sqliteandroid.Objects;
  * Created by pablo.rojas on 3/4/17.
  */
 
-public class ItemColumnAdapter {
+public class ItemColumn {
 
   String name;
   String type;
@@ -25,7 +25,7 @@ public class ItemColumnAdapter {
     this.type = type;
   }
 
-  public ItemColumnAdapter(String name, String type) {
+  public ItemColumn(String name, String type) {
     this.name = name;
     this.type = type;
 

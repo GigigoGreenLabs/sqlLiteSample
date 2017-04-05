@@ -49,7 +49,6 @@ public class TableActivity extends AppCompatActivity {
     if (extras != null) {
       tableList = extras.getStringArrayList("tableList");
       databaseName = extras.getString("databaseName");
-      // and get whatever type user account id is
     }
     dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
     db = dbmanager.getWritableDatabase();
@@ -81,7 +80,6 @@ public class TableActivity extends AppCompatActivity {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setView(databaseView)
-        // Add action buttons
         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             String tableName = editTextFromDialog.getText().toString().trim();
@@ -92,7 +90,6 @@ public class TableActivity extends AppCompatActivity {
               dbmanager.setTableName(tableName);
               dbmanager.createTable(db);
               tableList.add(tableName);
-
               Toast.makeText(TableActivity.this, "Created table with 1 value Integer Autoincrement", Toast.LENGTH_SHORT).show();
             }else{
               dbmanager.dropTable(db,tableName);

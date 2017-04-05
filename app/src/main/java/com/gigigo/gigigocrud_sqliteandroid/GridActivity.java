@@ -5,25 +5,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelObj;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -82,24 +80,20 @@ public class GridActivity extends AppCompatActivity {
     hmColumnNameList = dbmanager.getTableColumnNames(db, tableName);
 
     grdOpciones.setNumColumns(columns + 1);
-    Log.v("", "tablename" + tableName);
+
 
     datos = dbmanager.loadObjectList(db, tableName);
-    //datos = dbmanager.load(db, tableName);
+
 
     settingsDialog(hmColumnNameList);
 
-    datosString = new ArrayList<>();
-
-    if (datos.size() > 0) {
-      modelUsertoString();
-
-      adapter = new GridAdapter(this, datosString, columns);
-
-      grdOpciones.setAdapter(adapter);
-    } else {
+    if (datos.size() <= 0) {
       Toast.makeText(this, "Columnas sin contenido", Toast.LENGTH_SHORT).show();
     }
+    datosString = new ArrayList<>();
+    modelUsertoString();
+    adapter = new GridAdapter(this, datosString, columns);
+    grdOpciones.setAdapter(adapter);
   }
 
   private void settingsDialog(LinkedHashMap<String, String> columns) {

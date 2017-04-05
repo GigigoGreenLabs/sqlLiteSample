@@ -1,16 +1,12 @@
 package com.gigigo.gigigocrud_sqliteandroid.Adapters;
 
 import android.content.Context;
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
-import com.gigigo.gigigocrud_sqliteandroid.Objects.ItemColumnAdapter;
+import com.gigigo.gigigocrud_sqliteandroid.Objects.ItemColumn;
 import com.gigigo.gigigocrud_sqliteandroid.R;
 import java.util.List;
 
@@ -18,12 +14,12 @@ import java.util.List;
  * Created by pablo.rojas on 3/4/17.
  */
 
-public class ColumnAdapter extends ArrayAdapter<ItemColumnAdapter> {
+public class ColumnAdapter extends ArrayAdapter<ItemColumn> {
 
   private int layoutResource;
 
   public ColumnAdapter(Context context, int layoutResource,
-      List<ItemColumnAdapter> listaItems) {
+      List<ItemColumn> listaItems) {
     super(context, layoutResource, listaItems);
     this.layoutResource = layoutResource;
   }
@@ -37,7 +33,7 @@ public class ColumnAdapter extends ArrayAdapter<ItemColumnAdapter> {
       view = layoutInflater.inflate(layoutResource, null);
     }
 
-    ItemColumnAdapter item = getItem(position);
+    ItemColumn item = getItem(position);
 
     if (item != null) {
       TextView name = (TextView) view.findViewById(R.id.textViewName);

@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    test();
+    //test();
   }
 
   private void test() {

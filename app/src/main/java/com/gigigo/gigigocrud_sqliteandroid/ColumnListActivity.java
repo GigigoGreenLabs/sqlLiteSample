@@ -32,6 +32,7 @@ public class ColumnListActivity extends AppCompatActivity {
   EditText editTextNameFromDialog;
   EditText editTextTypeFromDialog;
   ColumnAdapter adapter;
+  List<ItemColumnAdapter> listaItems;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -59,7 +60,7 @@ public class ColumnListActivity extends AppCompatActivity {
 
     Iterator it = hmColumnType.entrySet().iterator();
 
-    List<ItemColumnAdapter> listaItems = new ArrayList<>();
+    listaItems = new ArrayList<>();
 
     while (it.hasNext()) {
       Map.Entry row = (Map.Entry) it.next();
@@ -89,7 +90,8 @@ public class ColumnListActivity extends AppCompatActivity {
             dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
             db = dbmanager.getWritableDatabase();
             dbmanager.insertColumnType(db, tableName, name, type);
-            hmColumnType.put(name, type);
+            ItemColumnAdapter item = new ItemColumnAdapter(name, type);
+            listaItems.add(item);
             adapter.notifyDataSetChanged();
           }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

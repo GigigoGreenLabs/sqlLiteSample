@@ -2,11 +2,14 @@ package com.gigigo.gigigocrud_sqliteandroid;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import android.widget.EditText;
+import android.widget.Toast;
+import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelObj;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.io.File;
 import java.util.ArrayList;
@@ -26,10 +29,12 @@ public class SQLiteManager extends SQLiteOpenHelper {
   private String tableName;
   String sqlCreate = "CREATE TABLE ";
   private boolean createTableWithColumns;
+  private Context context;
 
   public SQLiteManager(Context context, String name) {
     super(context, name, factory, version);
     this.databaseName = name;
+    this.context = context;
   }
 
   @Override public void onCreate(SQLiteDatabase db) {
@@ -118,6 +123,40 @@ public class SQLiteManager extends SQLiteOpenHelper {
     return userList;
   }
 
+  public LinkedHashMap<Integer, ModelObj> loadObjectList(SQLiteDatabase db, String tableName) {
+
+    LinkedHashMap<Integer, ModelObj> rowUser = new LinkedHashMap<>();
+    int id = 1;
+    ArrayList<String> userList;
+    int columns = getTableColumnCount(db, tableName);
+
+    ModelObj obj;
+
+    Cursor cursorDB = db.rawQuery("SELECT * from " + tableName + "", null);
+    if (cursorDB.moveToFirst()) {
+      userList = new ArrayList<String>();
+      for (int i = 0; i < columns; i++) {
+        userList.add(cursorDB.getString(i));
+      }
+      obj = new ModelObj();
+      obj.setList(userList);
+      rowUser.put(id, obj);
+      id++;
+
+      while (cursorDB.moveToNext()) {
+        userList = new ArrayList<String>();
+        for (int i = 0; i < columns; i++) {
+          userList.add(cursorDB.getString(i));
+        }
+        obj = new ModelObj();
+        obj.setList(userList);
+        rowUser.put(id, obj);
+        id++;
+      }
+    }
+    return rowUser;
+  }
+
   public void deleteRow(SQLiteDatabase db, ModelUser user) {
     String deleteStr = "DELETE FROM " + tableName + " WHERE id=" + user.id + " ";
     db.execSQL(deleteStr);
@@ -150,7 +189,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
   public LinkedHashMap<String, String> getTableColumnNames(SQLiteDatabase db, String tablename) {
 
-    LinkedHashMap<String, String>  columnNamesList = new LinkedHashMap<String, String>();
+    LinkedHashMap<String, String> columnNamesList = new LinkedHashMap<String, String>();
     String tableListStr = "PRAGMA table_info('" + tablename + "');";
     Cursor cursor = db.rawQuery(tableListStr, null);
     if (cursor.moveToFirst()) {
@@ -158,7 +197,7 @@ public class SQLiteManager extends SQLiteOpenHelper {
       //Log.v("Columns",""+ cursor.getString(0)+cursor.getString(1)+ cursor.getString(2));
       while (cursor.moveToNext()) {
         columnNamesList.put(cursor.getString(1), cursor.getString(2));
-        Log.v("Columns",""+ cursor.getString(0)+cursor.getString(1)+ cursor.getString(2));
+        Log.v("Columns", "" + cursor.getString(0) + cursor.getString(1) + cursor.getString(2));
       }
     }
     return columnNamesList;
@@ -263,14 +302,14 @@ public class SQLiteManager extends SQLiteOpenHelper {
 
     String count = ".databases";
     Cursor mcursor = dbAux.rawQuery(count, null);
-   if (mcursor.moveToFirst()){
-      Log.v("DATABASE",""+mcursor.getString(0));
-     dbList.add(mcursor.getString(0));
-     while (mcursor.moveToNext()){
-       Log.v("DATABASE",""+mcursor.getString(0));
-       dbList.add(mcursor.getString(0));
-     }
-   }
+    if (mcursor.moveToFirst()) {
+      Log.v("DATABASE", "" + mcursor.getString(0));
+      dbList.add(mcursor.getString(0));
+      while (mcursor.moveToNext()) {
+        Log.v("DATABASE", "" + mcursor.getString(0));
+        dbList.add(mcursor.getString(0));
+      }
+    }
 
     return dbList;
   }
@@ -286,40 +325,83 @@ public class SQLiteManager extends SQLiteOpenHelper {
       }
     }
     return columns;
-
   }
 
-  public void insertColumnType(SQLiteDatabase db, String tableName, String columnName, String columnType) {
-    String query = "ALTER TABLE '"+ tableName+"' ADD COLUMN '"+columnName+"' '"+columnType+"'";
+  public void insertColumnType(SQLiteDatabase db, String tableName, String columnName,
+      String columnType) {
+    String query =
+        "ALTER TABLE '" + tableName + "' ADD COLUMN '" + columnName + "' '" + columnType + "'";
     db.execSQL(query);
   }
 
   public void insertRowHm(SQLiteDatabase db, LinkedHashMap<EditText, String> hmEditTextColumn,
       String tableName) {
 
-    String query = "INSERT INTO '"+tableName+"' VALUES (";
+    String query = "INSERT INTO '" + tableName + "' VALUES (";
 
     EditText editTextAux;
     Iterator iterator = hmEditTextColumn.entrySet().iterator();
-
-    while (iterator.hasNext()){
+    boolean id = true;
+    while (iterator.hasNext()) {
       Map.Entry entry = (Map.Entry) iterator.next();
       String type = (String) entry.getValue();
       editTextAux = (EditText) entry.getKey();
-      if (type.equals("INTEGER")){
-        query = query +editTextAux.getText().toString().trim()+ ",";
-      }else if (type.equals("TEXT")){
-        query = query +"'"+editTextAux.getText().toString().trim()+"',";
-      }else if (type.equals("DATETIME")){
-        query = query +"CURRENT_TIMESTAMP ,";
+
+      if (type.equals("INTEGER") && id && editTextAux.getText().toString().trim().equals("")) {
+        query = query + "NULL" + ",";
+        id = false;
+      } else if (type.equals("INTEGER")) {
+        query = query + editTextAux.getText().toString().trim() + ",";
+      } else if (type.equals("TEXT")) {
+        query = query + "'" + editTextAux.getText().toString().trim() + "',";
+      } else if (type.equals("DATETIME")) {
+        query = query + "CURRENT_TIMESTAMP ,";
       }
     }
-    query = query.substring(0,query.length()-1)+ ");";
+    query = query.substring(0, query.length() - 1) + ");";
 
+    try {
+      db.execSQL(query);
+    } catch (SQLiteConstraintException e) {
+      Toast.makeText(context, "" + e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+    }
+  }
 
-    db.execSQL(query);
+  public void deleteRowFromTable(SQLiteDatabase db, String tableName, Object tag) {
+    String deleteStr = "DELETE FROM " + tableName + " WHERE id=" + tag + " ";
+    db.execSQL(deleteStr);
+  }
 
+  public void updateRowObj(SQLiteDatabase db, String tableName, ModelObj oldModelObj,
+      ModelObj newModelObj) {
 
+    ArrayList<String> alNewModel = newModelObj.getList();
+    ArrayList<String> alOldModel = oldModelObj.getList();
 
+    String updateStr = "UPDATE " + tableName + " set ";
+
+    LinkedHashMap<String, String> columnNameType = getTableColumnNames(db, tableName);
+    Iterator iterator = columnNameType.entrySet().iterator();
+    int i = 1;
+    iterator.next();
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      String name = (String) entry.getKey();
+      String type = (String) entry.getValue();
+
+      updateStr = updateStr + name + "=";
+      if (type.equals("TEXT")) {
+        updateStr = updateStr + "'" + alNewModel.get(i) + "' ,";
+      } else if (type.equals("DATETIME")) {
+        updateStr = updateStr + " CURRENT_TIMESTAMP ,";
+      } else {
+        updateStr = updateStr + alNewModel.get(i) + " ,";
+      }
+
+      i++;
+    } updateStr = updateStr.substring(0, updateStr.length() - 1);
+    updateStr = updateStr + "WHERE id=" + alOldModel.get(0);
+    Log.v("QUERY", "" + updateStr);
+    db.execSQL(updateStr);
   }
 }

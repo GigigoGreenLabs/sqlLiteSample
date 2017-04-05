@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelObj;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +31,6 @@ import java.util.Map;
 
 public class DataContentGridActivity extends AppCompatActivity {
 
-
   private GridView grdOpciones;
 
   private SQLiteManager dbmanager;
@@ -38,14 +38,21 @@ public class DataContentGridActivity extends AppCompatActivity {
   private String databaseName;
   private String tableName;
 
-  private ArrayList<ModelUser> datos;
+  //private ArrayList<ModelUser> datos;
+  private LinkedHashMap<Integer, ModelObj> datos;
+
   private LinkedHashMap<String, String> hmColumnNameList;
   private LinkedHashMap<EditText, String> hmEditTextColumn;
-  private String[] datosString;
+  private ArrayList<String> datosString;
 
+  private boolean update;
   private View dialogView;
   private Dialog rowDialog;
   private LinearLayout rowDialogParentLinear;
+
+  private GridAdapter adapter;
+  private ModelObj oldModelObj;
+  private int columns;
 
   private final String ACTION_VALUE_COLUMN = "ACTION_VALUE_COLUMN";
 
@@ -68,23 +75,26 @@ public class DataContentGridActivity extends AppCompatActivity {
     dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
     db = dbmanager.getWritableDatabase();
 
-
     grdOpciones = (GridView) findViewById(R.id.GridOpciones);
 
-    int columns = dbmanager.getTableColumnCount(db, tableName);
+    columns = dbmanager.getTableColumnCount(db, tableName);
 
     hmColumnNameList = dbmanager.getTableColumnNames(db, tableName);
 
     grdOpciones.setNumColumns(columns + 1);
+    Log.v("", "tablename" + tableName);
 
-    datos = dbmanager.load(db, tableName);
+    datos = dbmanager.loadObjectList(db, tableName);
+    //datos = dbmanager.load(db, tableName);
 
     settingsDialog(hmColumnNameList);
 
-    if (datos.size() > 0) {
-      modelUsertoString(columns);
+    datosString = new ArrayList<>();
 
-      GridAdapter adapter = new GridAdapter(this, datosString, columns);
+    if (datos.size() > 0) {
+      modelUsertoString();
+
+      adapter = new GridAdapter(this, datosString, columns);
 
       grdOpciones.setAdapter(adapter);
     } else {
@@ -97,7 +107,7 @@ public class DataContentGridActivity extends AppCompatActivity {
 
     Iterator iterator = columns.entrySet().iterator();
 
-    while (iterator.hasNext()){
+    while (iterator.hasNext()) {
       Map.Entry entry = (Map.Entry) iterator.next();
 
       LinearLayout linearAux = new LinearLayout(this);
@@ -116,14 +126,12 @@ public class DataContentGridActivity extends AppCompatActivity {
       EditText etColumn = new EditText(this);
       etColumn.setLayoutParams(params);
 
-      hmEditTextColumn.put(etColumn,entry.getValue().toString());
+      hmEditTextColumn.put(etColumn, entry.getValue().toString());
 
       linearAux.addView(tvColumn);
       linearAux.addView(etColumn);
       rowDialogParentLinear.addView(linearAux, params);
-
     }
-
   }
 
   private Dialog createDialog(View databaseView) {
@@ -133,49 +141,78 @@ public class DataContentGridActivity extends AppCompatActivity {
         // Add action buttons
         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
-            dbmanager.insertRowHm(db,hmEditTextColumn, tableName);
-
-
+            if (!update) {
+              dbmanager.insertRowHm(db, hmEditTextColumn, tableName);
+              updateHM();
+            } else {
+              update = false;
+              ModelObj newModelObj = createModelObjWithHm();
+              dbmanager.updateRowObj(db, tableName, oldModelObj, newModelObj);
+              reloadData();
+            }
+            resetEditText();
+            adapter.notifyDataSetChanged();
           }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int id) {
-
+        resetEditText();
       }
     });
     return builder.create();
   }
 
-
-
-  private void modelUsertoString(int columns) {
-
-    //datosString = new String[(datos.size() * columns) + columns];
-
-    int i = 0 + columns + 1;
-
-    datosString = new String[(datos.size() * i) + i];
-
-    Iterator iterator = hmColumnNameList.entrySet().iterator();
-
-    int j = 0;
+  private ModelObj createModelObjWithHm() {
+    ModelObj modelObjAux = new ModelObj();
+    ArrayList<String> alAux = new ArrayList<>();
+    EditText editTextAux;
+    Iterator iterator = hmEditTextColumn.entrySet().iterator();
     while (iterator.hasNext()) {
       Map.Entry entry = (Map.Entry) iterator.next();
-      datosString[j] = (String) entry.getKey();
-      j++;
+      editTextAux = (EditText) entry.getKey();
+      alAux.add(editTextAux.getText().toString().trim());
     }
-    datosString[j] = "ACTION";
+    modelObjAux.setList(alAux);
 
-    for (ModelUser dato : datos) {
-      datosString[i] = Integer.toString(dato.getId());
-      i++;
-      datosString[i] = dato.getNombre();
-      i++;
-      datosString[i] = Integer.toString(dato.getEdad());
-      i++;
-      datosString[i] = dato.getDatetime();
-      i++;
-      datosString[i] = ACTION_VALUE_COLUMN;
-      i++;
+    return modelObjAux;
+  }
+
+  private void updateHM() {
+
+    Iterator iterator = hmEditTextColumn.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      EditText newDataItem = (EditText) entry.getKey();
+
+      datosString.add(newDataItem.getText().toString().trim());
+    }
+    datosString.add(ACTION_VALUE_COLUMN);
+  }
+
+  private void modelUsertoString() {
+    Iterator itColumn = hmColumnNameList.entrySet().iterator();
+
+    ModelObj modelObjAux;
+    ArrayList<String> listRowStrings;
+
+    while (itColumn.hasNext()) {
+      Map.Entry entry = (Map.Entry) itColumn.next();
+      String columnName = (String) entry.getKey();
+      datosString.add(columnName);
+    }
+
+    datosString.add("ACTION");
+
+    Iterator itModelObj = datos.entrySet().iterator();
+
+    while (itModelObj.hasNext()) {
+      Map.Entry entry = (Map.Entry) itModelObj.next();
+      modelObjAux = (ModelObj) entry.getValue();
+      listRowStrings = modelObjAux.getList();
+      for (String listRowString : listRowStrings) {
+        datosString.add(listRowString);
+      }
+      datosString.add(ACTION_VALUE_COLUMN);
     }
   }
 
@@ -183,19 +220,11 @@ public class DataContentGridActivity extends AppCompatActivity {
     rowDialog.show();
   }
 
-  public void deleteRow(View view) {
-
-  }
-
-  public void updateRow(View view) {
-
-  }
-
   public class GridAdapter extends ArrayAdapter<String> implements View.OnClickListener {
 
     int mNumberOfCols = 0;
 
-    public GridAdapter(Context context, String[] listaItems, int numberOfColumns) {
+    public GridAdapter(Context context, ArrayList<String> listaItems, int numberOfColumns) {
       super(context, android.R.layout.simple_list_item_1, listaItems);
       mNumberOfCols = numberOfColumns;
     }
@@ -206,7 +235,6 @@ public class DataContentGridActivity extends AppCompatActivity {
 
       LinearLayout linearLayout;
 
-
       layoutInflater = LayoutInflater.from(getContext());
 
       String item = getItem(position);
@@ -215,8 +243,8 @@ public class DataContentGridActivity extends AppCompatActivity {
         view = layoutInflater.inflate(R.layout.grid_row_item, null); //edition
         ImageButton imbBtnUpdate = (ImageButton) view.findViewById(R.id.btnUpdateRow);
         ImageButton btnDeleteRow = (ImageButton) view.findViewById(R.id.btnDeleteRow);
-        imbBtnUpdate.setTag(position / (mNumberOfCols+1));
-        btnDeleteRow.setTag(position / (mNumberOfCols+1));
+        imbBtnUpdate.setTag(position / (mNumberOfCols + 1));
+        btnDeleteRow.setTag(position / (mNumberOfCols + 1));
         btnDeleteRow.setOnClickListener(this);
         imbBtnUpdate.setOnClickListener(this);
       } else {
@@ -243,8 +271,66 @@ public class DataContentGridActivity extends AppCompatActivity {
 
     @Override public void onClick(View v) {
 
-      Toast.makeText(DataContentGridActivity.this,
-          "Position: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
+      if (v.getId() == R.id.btnDeleteRow) {
+        Toast.makeText(DataContentGridActivity.this,
+            "Posi-Delete: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
+        int rowid = getId((int) v.getTag());
+        int id = Integer.parseInt(datosString.get(rowid));
+
+        dbmanager.deleteRowFromTable(db, tableName, id);
+        for (int i = 0; i < (mNumberOfCols + 1); i++) {
+          datosString.remove(rowid);
+        }
+        adapter.notifyDataSetChanged();
+      } else if (v.getId() == R.id.btnUpdateRow) {
+        int rowid = getId((int) v.getTag());
+        Toast.makeText(DataContentGridActivity.this,
+            "Pos-Update: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
+        settingDialogwithUpdate(rowid);
+        update = true;
+        rowDialog.show();
+      }
     }
+
+    public int getId(int tagId) {
+      int positionIdByTag = tagId * (mNumberOfCols + 1);
+      return positionIdByTag;
+    }
+  }
+
+  private void settingDialogwithUpdate(int rowid) {
+    Iterator iterator = hmEditTextColumn.entrySet().iterator();
+    EditText editTextAux;
+    oldModelObj = new ModelObj();
+    ArrayList<String> modelRow = new ArrayList<>();
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      editTextAux = (EditText) entry.getKey();
+      editTextAux.setText(datosString.get(rowid));
+      modelRow.add(datosString.get(rowid));
+      rowid++;
+    }
+    oldModelObj.setList(modelRow);
+  }
+
+  public void resetEditText() {
+    Iterator iterator = hmEditTextColumn.entrySet().iterator();
+    EditText editTextAux;
+
+    while (iterator.hasNext()) {
+      Map.Entry entry = (Map.Entry) iterator.next();
+      editTextAux = (EditText) entry.getKey();
+      editTextAux.setHint("");
+      editTextAux.setText("");
+    }
+  }
+
+  public void reloadData() {
+
+    LinkedHashMap<Integer, ModelObj> integerModelObjLinkedHashMap = new LinkedHashMap<>();
+    integerModelObjLinkedHashMap = dbmanager.loadObjectList(db, tableName);
+    datos = integerModelObjLinkedHashMap;
+    datosString.clear();
+    modelUsertoString();
   }
 }

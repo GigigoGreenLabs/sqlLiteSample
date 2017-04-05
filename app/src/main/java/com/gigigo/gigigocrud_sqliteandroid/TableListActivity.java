@@ -91,14 +91,16 @@ public class TableListActivity extends AppCompatActivity {
               dbmanager.setTableName(tableName);
               dbmanager.createTable(db);
               tableList.add(tableName);
+
               Toast.makeText(TableListActivity.this, "Created table with 1 value Integer Autoincrement", Toast.LENGTH_SHORT).show();
             }else{
               dbmanager.dropTable(db,tableName);
               tableList.remove(tableName);
               dropTable = false;
             }
-
             adapter.notifyDataSetChanged();
+
+
 
           }
         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

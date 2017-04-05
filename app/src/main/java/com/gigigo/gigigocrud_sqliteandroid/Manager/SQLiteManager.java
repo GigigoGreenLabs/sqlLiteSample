@@ -1,4 +1,4 @@
-package com.gigigo.gigigocrud_sqliteandroid;
+package com.gigigo.gigigocrud_sqliteandroid.Manager;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -22,14 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelObj;
-import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelUser;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class DataContentGridActivity extends AppCompatActivity {
+public class GridActivity extends AppCompatActivity {
 
   private GridView grdOpciones;
 
@@ -58,7 +58,7 @@ public class DataContentGridActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_data_content_grid);
+    setContentView(R.layout.activity_grid);
 
     LayoutInflater inflater = getLayoutInflater();
     dialogView = inflater.inflate(R.layout.dialog_row, null);
@@ -240,7 +240,7 @@ public class DataContentGridActivity extends AppCompatActivity {
       String item = getItem(position);
 
       if (item.equals(ACTION_VALUE_COLUMN)) {
-        view = layoutInflater.inflate(R.layout.grid_row_item, null); //edition
+        view = layoutInflater.inflate(R.layout.buttons_row_item, null); //edition
         ImageButton imbBtnUpdate = (ImageButton) view.findViewById(R.id.btnUpdateRow);
         ImageButton btnDeleteRow = (ImageButton) view.findViewById(R.id.btnDeleteRow);
         imbBtnUpdate.setTag(position / (mNumberOfCols + 1));
@@ -272,7 +272,7 @@ public class DataContentGridActivity extends AppCompatActivity {
     @Override public void onClick(View v) {
 
       if (v.getId() == R.id.btnDeleteRow) {
-        Toast.makeText(DataContentGridActivity.this,
+        Toast.makeText(GridActivity.this,
             "Posi-Delete: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
         int rowid = getId((int) v.getTag());
         int id = Integer.parseInt(datosString.get(rowid));
@@ -284,7 +284,7 @@ public class DataContentGridActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
       } else if (v.getId() == R.id.btnUpdateRow) {
         int rowid = getId((int) v.getTag());
-        Toast.makeText(DataContentGridActivity.this,
+        Toast.makeText(GridActivity.this,
             "Pos-Update: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
         settingDialogwithUpdate(rowid);
         update = true;

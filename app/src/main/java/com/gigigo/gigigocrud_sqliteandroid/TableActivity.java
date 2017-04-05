@@ -15,10 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class TableListActivity extends AppCompatActivity {
+public class TableActivity extends AppCompatActivity {
 
   SQLiteManager dbmanager;
   SQLiteDatabase db;
@@ -34,7 +35,7 @@ public class TableListActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_table_list);
+    setContentView(R.layout.activity_table);
 
     LayoutInflater inflater = getLayoutInflater();
     dialogView = inflater.inflate(R.layout.dialog_edittext, null);
@@ -54,7 +55,7 @@ public class TableListActivity extends AppCompatActivity {
     db = dbmanager.getWritableDatabase();
 
     if (tableList.size() <= 0) {
-      Toast.makeText(TableListActivity.this, "BASE DE DATOS SIN CONTENIDO", Toast.LENGTH_SHORT)
+      Toast.makeText(TableActivity.this, "BASE DE DATOS SIN CONTENIDO", Toast.LENGTH_SHORT)
           .show();
     }
 
@@ -68,7 +69,7 @@ public class TableListActivity extends AppCompatActivity {
       public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
         final String item = (String) parent.getItemAtPosition(position);
         columnList = dbmanager.getTableColumnNames(db, item);
-        Intent intent = new Intent(TableListActivity.this, ColumnListActivity.class);
+        Intent intent = new Intent(TableActivity.this, ColumnActivity.class);
         intent.putExtra("databaseName", databaseName);
         intent.putExtra("tableName", item);
         startActivity(intent);
@@ -92,7 +93,7 @@ public class TableListActivity extends AppCompatActivity {
               dbmanager.createTable(db);
               tableList.add(tableName);
 
-              Toast.makeText(TableListActivity.this, "Created table with 1 value Integer Autoincrement", Toast.LENGTH_SHORT).show();
+              Toast.makeText(TableActivity.this, "Created table with 1 value Integer Autoincrement", Toast.LENGTH_SHORT).show();
             }else{
               dbmanager.dropTable(db,tableName);
               tableList.remove(tableName);

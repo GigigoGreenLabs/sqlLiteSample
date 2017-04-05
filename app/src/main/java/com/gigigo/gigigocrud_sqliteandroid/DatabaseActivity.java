@@ -15,9 +15,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.gigigo.gigigocrud_sqliteandroid.Adapters.DatabaseAdapter;
+import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import java.util.ArrayList;
 
-public class DataBaseListActivity extends AppCompatActivity {
+public class DatabaseActivity extends AppCompatActivity {
   ArrayList<String> databaseList;
   SQLiteManager dbmanager;
   SQLiteDatabase db;
@@ -30,7 +32,7 @@ public class DataBaseListActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_database_list);
+    setContentView(R.layout.activity_database);
 
     LayoutInflater inflater = getLayoutInflater();
     dialogView = inflater.inflate(R.layout.dialog_edittext, null);
@@ -42,7 +44,7 @@ public class DataBaseListActivity extends AppCompatActivity {
 
     listview = (ListView) findViewById(R.id.listAdapter);
 
-    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, databaseList );
+    adapter = new DatabaseAdapter(this,R.layout.button_row_item, databaseList);
     listview.setAdapter(adapter);
 
     editTextFromDialog = (EditText) dialogView.findViewById(R.id.editTextDialog);
@@ -55,14 +57,14 @@ public class DataBaseListActivity extends AppCompatActivity {
         dbmanager = new SQLiteManager(getApplicationContext(), item);
         db = dbmanager.getWritableDatabase();
         ArrayList<String> tableList = new ArrayList<String>();
-        Intent intent = new Intent(DataBaseListActivity.this, TableListActivity.class);
+        Intent intent = new Intent(DatabaseActivity.this, TableActivity.class);
         tableList = dbmanager.getTableList(db);
         intent.putExtra("databaseName", item);
         intent.putStringArrayListExtra("tableList", tableList);
         if (tableList.size() > 0) {
           startActivity(intent);
         } else {
-          Toast.makeText(DataBaseListActivity.this, "BASE DE DATOS SIN CONTENIDO",
+          Toast.makeText(DatabaseActivity.this, "BASE DE DATOS SIN CONTENIDO",
               Toast.LENGTH_SHORT).show();
           startActivity(intent);
         }
@@ -118,8 +120,4 @@ public class DataBaseListActivity extends AppCompatActivity {
     databaseDialog.show();
   }
 
-  public void dropDatabase(View view){
-    dropDatabase = true;
-    databaseDialog.show();
-  }
 }

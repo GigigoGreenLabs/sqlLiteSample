@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.gigigo.gigigocrud_sqliteandroid.Adapters.ColumnAdapter;
+import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ItemColumnAdapter;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ColumnListActivity extends AppCompatActivity {
+public class ColumnActivity extends AppCompatActivity {
 
   SQLiteManager dbmanager;
   SQLiteDatabase db;
@@ -36,7 +37,7 @@ public class ColumnListActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_column_list);
+    setContentView(R.layout.activity_column);
 
     LayoutInflater inflater = getLayoutInflater();
     dialogView = inflater.inflate(R.layout.dialog_double_edittext, null);
@@ -107,7 +108,7 @@ public class ColumnListActivity extends AppCompatActivity {
   }
 
   public void openDataActivity(View view) {
-    Intent intent = new Intent(ColumnListActivity.this, DataContentGridActivity.class);
+    Intent intent = new Intent(ColumnActivity.this, GridActivity.class);
     intent.putExtra("databaseName", databaseName);
     intent.putExtra("tableName", tableName);
     startActivity(intent);

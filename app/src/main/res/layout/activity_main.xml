@@ -6,130 +6,41 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.gigigo.gigigocrud_sqliteandroid.MainActivity"
+    android:weightSum="1"
     >
-
-  <ScrollView
-      android:id="@+id/scroll"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_weight="0.5"
+        android:gravity="center_vertical|center_horizontal"
         >
-
-
-
-      <Button
-          android:id="@+id/btnOpenDatabase"
+      <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Manager Example"
-          />
+          android:textSize="20dp"
+          android:gravity="center"
+          android:text="SQLite Manager"
+          android:textStyle="bold|italic"/>
 
- <Button
-          android:id="@+id/btnSetDatabase"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Set DB"
-          />
-
-
-      <Button
-          android:id="@+id/btnCreateDatabase"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Create DB"
-          />
-
-
-      <Button
-          android:id="@+id/btnExistsDatabase"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Exists DB"
-          />
-
-
-      <Button
-          android:id="@+id/btnDropDatabase"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Drop DB"
-          />
-
-      <Button
-          android:id="@+id/btnCreateTable"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Create TABLE"
-          />
-
-      <Button
-          android:id="@+id/btnExistsTable"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Exists TABLE"
-          />
-
-
-      <Button
-          android:id="@+id/btnDropTable"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Drop TABLE"
-          />
-
-      <Button
-          android:id="@+id/btnClearTable"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Clear TABLE"
-          />
-
-      <Button
-          android:id="@+id/btnInsertItem"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Insert ITEM"
-          />
-
-      <Button
-          android:id="@+id/btnUpdateItem"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Update ITEM"
-          />
-
-      <Button
-          android:id="@+id/btnDeleteItem"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Delete ITEM"
-          />
-
-      <Button
-          android:id="@+id/btnSelectItemsFromTable"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Select ITEMS"
-          />
-
-      <Button
-          android:id="@+id/btnFindItemByName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Find BY-NAME"
-          />
-
-      <Button
-          android:id="@+id/btnFindItemLikeName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:text="Find LIKE-NAME"
-          />
     </LinearLayout>
-  </ScrollView>
-</LinearLayout>
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.5"
+      android:gravity="center_vertical|center_horizontal"
+      >
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:background="@android:color/transparent"
+        android:text="Enter"
+        android:textStyle="bold"
+        android:id="@+id/btnEnterSample"
+        />
+  </LinearLayout>
+
+  </LinearLayout>

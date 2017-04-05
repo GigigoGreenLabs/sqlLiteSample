@@ -16,16 +16,16 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
-    <activity android:name=".TableListActivity">
+    <activity android:name=".TableActivity">
     </activity>
-    <activity android:name=".ColumnListActivity">
+    <activity android:name=".ColumnActivity">
     </activity>
     <activity
-        android:name=".DataBaseListActivity"
+        android:name=".DatabaseActivity"
         android:theme="@style/AppTheme.NoActionBar">
     </activity>
     <activity
-        android:name=".DataContentGridActivity"
+        android:name=".GridActivity"
         android:configChanges="orientation"
         android:screenOrientation="landscape">
 

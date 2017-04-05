@@ -25,7 +25,7 @@
 
   <ListView xmlns:android="http://schemas.android.com/apk/res/android"
       android:id="@+id/listAdapter"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_weight="0.8"
       />
@@ -35,23 +35,18 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal"
       android:layout_weight="0.1"
-      android:weightSum="1"
+      android:gravity="center_horizontal"
       >
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.50"
-        android:text="Create"
-        android:onClick="createDatabase"
-        />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="0.50"
-        android:text="Drop"
-        android:onClick="dropDatabase"
+        android:text="Create Database"
+        android:onClick="createDatabase"
+        android:background="@android:color/transparent"
+        android:textStyle="bold"
         />
+
   </LinearLayout>
 
 </LinearLayout>

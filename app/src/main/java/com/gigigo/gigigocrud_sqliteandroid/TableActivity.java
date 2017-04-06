@@ -30,7 +30,7 @@ public class TableActivity extends AppCompatActivity {
   private Dialog tableDialog;
   private View dialogView;
   private EditText editTextFromDialog;
-  private boolean dropTable;
+
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -53,7 +53,8 @@ public class TableActivity extends AppCompatActivity {
       Toast.makeText(TableActivity.this, "BASE DE DATOS SIN CONTENIDO", Toast.LENGTH_SHORT).show();
     }
 
-    adapter = new TableAdapter(this, R.layout.button_row_table_activity, tableList,dbmanager,databaseName);
+    adapter = new TableAdapter(this, R.layout.button_row_table_activity, tableList, dbmanager,
+        databaseName);
 
     listview.setAdapter(adapter);
 
@@ -74,7 +75,6 @@ public class TableActivity extends AppCompatActivity {
         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             String tableName = editTextFromDialog.getText().toString().trim();
-            if (!dropTable) {
               Log.v("CREATEBUTTON", "" + tableName);
               dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
               db = dbmanager.getWritableDatabase();
@@ -83,12 +83,8 @@ public class TableActivity extends AppCompatActivity {
               tableList.add(tableName);
               Toast.makeText(TableActivity.this, "Created table with 1 value Integer Autoincrement",
                   Toast.LENGTH_SHORT).show();
-            } else {
-              dbmanager.dropTable(db, tableName);
-              tableList.remove(tableName);
-              dropTable = false;
-            }
-            adapter.notifyDataSetChanged();
+              adapter.notifyDataSetChanged();
+
           }
         })
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -103,8 +99,4 @@ public class TableActivity extends AppCompatActivity {
     tableDialog.show();
   }
 
-  public void dropTable(View view) {
-    dropTable = true;
-    tableDialog.show();
-  }
 }

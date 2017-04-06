@@ -68,11 +68,14 @@ public class TableAdapter extends ArrayAdapter<String> implements View.OnClickLi
   }
 
   @Override public void onClick(View v) {
+    final String item = v.getTag().toString();
     if (v.getId() == R.id.btnDeleteTable){
-      Log.v("deletetable"," ");
+      dbmanager.dropTable(db, item);
+      tableList.remove(item);
+      this.notifyDataSetChanged();
 
     }else if (v.getId() == R.id.textViewTableName){
-      final String item = v.getTag().toString();
+
       LinkedHashMap<String, String> columnList = dbmanager.getTableColumnNames(db, item);
       Intent intent = new Intent(context, ColumnActivity.class);
       intent.putExtra("databaseName", databaseName);

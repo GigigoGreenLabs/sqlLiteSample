@@ -10,6 +10,8 @@
       android:id="@+id/btnUpdateRow"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:textColor="@android:color/white"
+      android:background="@android:color/transparent"
       android:layout_weight="0.5"
       android:src="@android:drawable/ic_menu_edit"
       />
@@ -19,6 +21,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_weight="0.5"
+      android:textColor="@android:color/white"
+      android:background="@android:color/transparent"
       app:srcCompat="@android:drawable/ic_menu_delete"
       />
 

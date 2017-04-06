@@ -36,9 +36,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20dp"
-        android:background="@android:color/transparent"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
         android:text="Enter"
-        android:textStyle="bold"
         android:id="@+id/btnEnterSample"
         />
   </LinearLayout>

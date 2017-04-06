@@ -15,23 +15,22 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.gigigo.gigigocrud_sqliteandroid.Adapters.TableAdapter;
 import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class TableActivity extends AppCompatActivity {
 
-  SQLiteManager dbmanager;
-  SQLiteDatabase db;
-  ArrayList<String> tableList;
-  LinkedHashMap<String, String> columnList;
-  ArrayAdapter<String> adapter;
-  String databaseName = "";
-  Dialog tableDialog;
-  View dialogView;
-  EditText editTextFromDialog;
-  boolean dropTable;
-
+  private SQLiteManager dbmanager;
+  private SQLiteDatabase db;
+  private ArrayList<String> tableList;
+  private ArrayAdapter adapter;
+  private String databaseName = "";
+  private Dialog tableDialog;
+  private View dialogView;
+  private EditText editTextFromDialog;
+  private boolean dropTable;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,11 +39,8 @@ public class TableActivity extends AppCompatActivity {
     LayoutInflater inflater = getLayoutInflater();
     dialogView = inflater.inflate(R.layout.dialog_edittext, null);
     tableDialog = createDialog(dialogView);
-
     final ListView listview = (ListView) findViewById(R.id.listTable);
-
     tableList = new ArrayList<>();
-    columnList = new LinkedHashMap<>();
     Bundle extras = getIntent().getExtras();
     if (extras != null) {
       tableList = extras.getStringArrayList("tableList");
@@ -54,24 +50,19 @@ public class TableActivity extends AppCompatActivity {
     db = dbmanager.getWritableDatabase();
 
     if (tableList.size() <= 0) {
-      Toast.makeText(TableActivity.this, "BASE DE DATOS SIN CONTENIDO", Toast.LENGTH_SHORT)
-          .show();
+      Toast.makeText(TableActivity.this, "BASE DE DATOS SIN CONTENIDO", Toast.LENGTH_SHORT).show();
     }
 
-    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tableList);
+    adapter = new TableAdapter(this, R.layout.button_row_table_activity, tableList,dbmanager,databaseName);
+
     listview.setAdapter(adapter);
 
-    editTextFromDialog  = (EditText) dialogView.findViewById(R.id.editTextDialog);
+    editTextFromDialog = (EditText) dialogView.findViewById(R.id.editTextDialog);
 
     listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
-        final String item = (String) parent.getItemAtPosition(position);
-        columnList = dbmanager.getTableColumnNames(db, item);
-        Intent intent = new Intent(TableActivity.this, ColumnActivity.class);
-        intent.putExtra("databaseName", databaseName);
-        intent.putExtra("tableName", item);
-        startActivity(intent);
+
       }
     });
   }
@@ -83,35 +74,33 @@ public class TableActivity extends AppCompatActivity {
         .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
           public void onClick(DialogInterface dialog, int id) {
             String tableName = editTextFromDialog.getText().toString().trim();
-            if (!dropTable){
-              Log.v("CREATEBUTTON",""+tableName);
-              dbmanager = new SQLiteManager(getApplicationContext(),databaseName);
+            if (!dropTable) {
+              Log.v("CREATEBUTTON", "" + tableName);
+              dbmanager = new SQLiteManager(getApplicationContext(), databaseName);
               db = dbmanager.getWritableDatabase();
               dbmanager.setTableName(tableName);
               dbmanager.createTable(db);
               tableList.add(tableName);
-              Toast.makeText(TableActivity.this, "Created table with 1 value Integer Autoincrement", Toast.LENGTH_SHORT).show();
-            }else{
-              dbmanager.dropTable(db,tableName);
+              Toast.makeText(TableActivity.this, "Created table with 1 value Integer Autoincrement",
+                  Toast.LENGTH_SHORT).show();
+            } else {
+              dbmanager.dropTable(db, tableName);
               tableList.remove(tableName);
               dropTable = false;
             }
             adapter.notifyDataSetChanged();
-
-
+          }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+          public void onClick(DialogInterface dialog, int id) {
 
           }
-        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int id) {
-
-      }
-    });
+        });
     return builder.create();
   }
 
   public void createTable(View view) {
     tableDialog.show();
-
   }
 
   public void dropTable(View view) {

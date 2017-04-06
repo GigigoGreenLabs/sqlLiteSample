@@ -41,8 +41,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Insert"
-        android:background="@android:color/transparent"
         android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
         android:onClick="insertRow"
         />
 

@@ -39,11 +39,12 @@
       >
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Database"
         android:onClick="createDatabase"
-        android:background="@android:color/transparent"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
         android:textStyle="bold"
         />
 

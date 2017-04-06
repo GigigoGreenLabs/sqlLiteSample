@@ -46,6 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:text="Insert"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
         android:onClick="insertColumnType"
         />
 
@@ -55,6 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
         android:onClick="openDataActivity"
         android:text="Data Content"
         />

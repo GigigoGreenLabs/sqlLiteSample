@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import com.gigigo.gigigocrud_sqliteandroid.Adapters.GridAdapter;
 import com.gigigo.gigigocrud_sqliteandroid.Manager.SQLiteManager;
+import com.gigigo.gigigocrud_sqliteandroid.Objects.DialogClearContent;
 import com.gigigo.gigigocrud_sqliteandroid.Objects.ModelObj;
 
 import java.util.ArrayList;
@@ -82,9 +85,7 @@ public class GridActivity extends AppCompatActivity {
 
     grdOpciones.setNumColumns(columns + 1);
 
-
     datos = dbmanager.loadObjectList(db, tableName);
-
 
     settingsDialog(hmColumnNameList);
 
@@ -184,6 +185,20 @@ public class GridActivity extends AppCompatActivity {
     datosString.add(ACTION_VALUE_COLUMN);
   }
 
+  public ArrayList<String> getColumnList() {
+    ArrayList<String> listRowStrings = new ArrayList<>();
+    Iterator itColumn = hmColumnNameList.entrySet().iterator();
+
+    while (itColumn.hasNext()) {
+      Map.Entry entry = (Map.Entry) itColumn.next();
+      String columnName = (String) entry.getKey();
+      listRowStrings.add(columnName);
+    }
+
+    listRowStrings.add("ACTION");
+    return listRowStrings;
+  }
+
   private void modelUsertoString() {
     Iterator itColumn = hmColumnNameList.entrySet().iterator();
 
@@ -215,83 +230,11 @@ public class GridActivity extends AppCompatActivity {
     rowDialog.show();
   }
 
-  //public class GridAdapter extends ArrayAdapter<String> implements View.OnClickListener {
-  //
-  //  int mNumberOfCols = 0;
-  //
-  //  public GridAdapter(Context context, ArrayList<String> listaItems, int numberOfColumns) {
-  //    super(context, android.R.layout.simple_list_item_1, listaItems);
-  //    mNumberOfCols = numberOfColumns;
-  //  }
-  //
-  //  @Override public View getView(int position, View convertView, ViewGroup parent) {
-  //    View view = convertView;
-  //    LayoutInflater layoutInflater = null;
-  //
-  //    LinearLayout linearLayout;
-  //
-  //    layoutInflater = LayoutInflater.from(getContext());
-  //
-  //    String item = getItem(position);
-  //
-  //    if (item.equals(ACTION_VALUE_COLUMN)) {
-  //      view = layoutInflater.inflate(R.layout.buttons_row_item, null); //edition
-  //      ImageButton imbBtnUpdate = (ImageButton) view.findViewById(R.id.btnUpdateRow);
-  //      ImageButton btnDeleteRow = (ImageButton) view.findViewById(R.id.btnDeleteRow);
-  //      imbBtnUpdate.setTag(position / (mNumberOfCols + 1));
-  //      btnDeleteRow.setTag(position / (mNumberOfCols + 1));
-  //      btnDeleteRow.setOnClickListener(this);
-  //      imbBtnUpdate.setOnClickListener(this);
-  //    } else {
-  //
-  //      view = layoutInflater.inflate(R.layout.grid_row_header, null);
-  //      linearLayout = (LinearLayout) view.findViewById(R.id.lytBackGround);
-  //      TextView value = (TextView) view.findViewById(R.id.textGridRowItem);
-  //      if (position <= mNumberOfCols) {
-  //        //view = layoutInflater.inflate(R.layout.grid_row_header, null);//normal value of colum
-  //
-  //      } else {
-  //        linearLayout.setBackgroundColor(0xffffffff);
-  //        value.setTextColor(0xff000000);
-  //        value.setTypeface(null, Typeface.NORMAL);
-  //        //view = layoutInflater.inflate(android.R.layout.simple_list_item_1,null);//normal value of colum
-  //
-  //      }
-  //      value.setText(item);
-  //    }
-  //    /**/
-  //
-  //    return view;
-  //  }
-  //
-  //  @Override public void onClick(View v) {
-  //
-  //    if (v.getId() == R.id.btnDeleteRow) {
-  //      Toast.makeText(GridActivity.this,
-  //          "Posi-Delete: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
-  //      int rowid = getId((int) v.getTag());
-  //      int id = Integer.parseInt(datosString.get(rowid));
-  //
-  //      dbmanager.deleteRowFromTable(db, tableName, id);
-  //      for (int i = 0; i < (mNumberOfCols + 1); i++) {
-  //        datosString.remove(rowid);
-  //      }
-  //      adapter.notifyDataSetChanged();
-  //    } else if (v.getId() == R.id.btnUpdateRow) {
-  //      int rowid = getId((int) v.getTag());
-  //      Toast.makeText(GridActivity.this,
-  //          "Pos-Update: " + v.getTag() + "Action->" + v.getId(), Toast.LENGTH_LONG).show();
-  //      settingDialogwithUpdate(rowid);
-  //      update = true;
-  //      rowDialog.show();
-  //    }
-  //  }
-  //
-  //  public int getId(int tagId) {
-  //    int positionIdByTag = tagId * (mNumberOfCols + 1);
-  //    return positionIdByTag;
-  //  }
-  //}
+  public void clearContent(View view) {
+    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+    DialogClearContent dialog = new DialogClearContent(dbmanager, tableName, adapter);
+    dialog.show(ft, "ClearContentDialog");
+  }
 
   public void settingDialogwithUpdate(int rowid) {
     Iterator iterator = hmEditTextColumn.entrySet().iterator();

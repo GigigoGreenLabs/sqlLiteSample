@@ -35,15 +35,28 @@
       android:orientation="horizontal"
       android:background="@color/colorPrimary"
       android:layout_weight="0.1"
+      android:weightSum="1"
       >
 
     <Button
-        android:layout_width="match_parent"
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Insert"
         android:textColor="@android:color/white"
         android:background="@color/colorPrimary"
         android:onClick="insertRow"
+        />
+
+
+    <Button
+        android:layout_weight="0.5"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Clear"
+        android:textColor="@android:color/white"
+        android:background="@color/colorPrimary"
+        android:onClick="clearContent"
         />
 
   </LinearLayout>

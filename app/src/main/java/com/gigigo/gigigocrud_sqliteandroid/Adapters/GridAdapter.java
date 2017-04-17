@@ -113,5 +113,9 @@ public class GridAdapter extends ArrayAdapter<String> implements View.OnClickLis
     return positionIdByTag;
   }
 
-
+  public void clearListContent() {
+    listaItems.clear();
+    listaItems.addAll(gridActivity.getColumnList());
+    this.notifyDataSetChanged();
+  }
 }
